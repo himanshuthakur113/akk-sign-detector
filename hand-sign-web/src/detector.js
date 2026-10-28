@@ -23,7 +23,8 @@ export async function initDetector()
     return handLandmarker;
 }
 
-export async function detect()
+export function detect(video)
 {
-
+    const result = handLandmarker.detectForVideo(video, performance.now());
+    return result.landmarks[0];
 }
