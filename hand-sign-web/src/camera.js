@@ -1,9 +1,13 @@
+import { initDetector, detect } from "./detector.js";
+
 const video = document.getElementById("kvid");
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
 const status = document.getElementById("status");
 
 let webcam_stream;
+let handLandmarker = null;
+let animationId = null;
 
 async function startCamera()
 {
@@ -11,7 +15,28 @@ async function startCamera()
     {
     webcam_stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: "user", height: 480, width: 640}});
     video.srcObject = webcam_stream;
-    status.textContent = "Camera Started Successfully";
+    status.textContent = "Camera Started. Loading Model...";
+
+    handLandmarker = await initDetector();
+    status.textContent = "Camera and Hand detector ready";
+
+    function loop()
+    {   
+        if(!webcam_stream)
+        {
+            return;
+        }
+
+        if(video.readyState >= 2)
+        {
+        const result = detect(video);
+        console.log(result);
+        }
+
+        animationId = requestAnimationFrame(loop);
+    }
+
+    animationId = requestAnimationFrame(loop);
     }
     catch(error)
     {
@@ -27,6 +52,8 @@ async function startCamera()
         {
             status.textContent = "Error Occured " + error.message;
         }
+
+        stopCamera();
     }
 }
 
