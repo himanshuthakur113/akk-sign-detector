@@ -1,9 +1,31 @@
 #kvid
-{
+{   
+    display: block;
     width: 640px;
     max-width: 100%;
     height: 400px;
+    object-fit: cover;
     background: #222;
     border-radius: 12px;
+    transform: scaleX(-1);
+}
+
+.stage
+{
+    position: relative;
+    display: inline-block;
+    width: 640px;
+    max-width: 100%;
+    
+}
+
+canvas
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
     transform: scaleX(-1);
 }
