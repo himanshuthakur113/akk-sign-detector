@@ -29,3 +29,12 @@ canvas
     pointer-events: none;
     transform: scaleX(-1);
 }
+
+#label
+{
+    font-size: 32px;
+    color: purple;
+    text-align: center;
+    margin-top: 20px;
+    font-weight: bold;
+}

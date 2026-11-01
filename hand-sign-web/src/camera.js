@@ -7,6 +7,7 @@ const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
 const status = document.getElementById("status");
 const canvas = document.querySelector("canvas");
+const label = document.getElementById("label");
 
 let webcam_stream;
 let handLandmarker = null;
@@ -37,6 +38,7 @@ async function startCamera()
 
         drawHand(canvas, result);
         const sign = classify(result);
+        label.textContent = sign ?? "Show your hand";
         console.log(sign);
         }
 
