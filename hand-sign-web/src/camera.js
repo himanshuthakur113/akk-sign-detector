@@ -167,3 +167,9 @@ document.addEventListener("visibilitychange", ()=>
     }
 
 });
+
+video.addEventListener("loadedmetadata", ()=> 
+{
+    canvas.width= video.videoWidth;
+    canvas.height = video.videoHeight;
+});
