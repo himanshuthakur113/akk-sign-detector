@@ -133,7 +133,7 @@ function stopCamera()
 async function flipCamera()
 {
     if(!webcam_stream) return;
-    for(const track of webcam_stream.getTracks)
+    for(const track of webcam_stream.getTracks())
     {
         track.stop();
     }
