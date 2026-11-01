@@ -18,6 +18,40 @@ let animationId = null;
 let smoother = createSmoother(30);
 let lastSpoken = null;
 
+function loop()
+{   
+    if(!webcam_stream || document.hidden)
+    {
+        return;
+    }
+
+    if(video.readyState >= 2)
+    {
+        const result = detect(video);
+        console.log(result);
+
+        drawHand(canvas, result);
+
+        const sign = classify(result);
+        console.log(sign);
+
+        const stableSign = smoother.update(sign);
+        label.textContent = stableSign ?? "Show your hand";
+
+        if(!stableSign)
+        {
+            lastSpoken = null;
+        }
+
+        if(soundToggle.checked && stableSign != lastSpoken)
+        {
+            speak(stableSign);
+            lastSpoken = stableSign;
+        } 
+    }
+    animationId = requestAnimationFrame(loop);
+}
+
 async function startCamera()
 {
     if(webcam_stream) return;
@@ -27,51 +61,20 @@ async function startCamera()
 
     try
     {
-    webcam_stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: "user", height: 480, width: 640}});
-    video.srcObject = webcam_stream;
-    stopBtn.disabled = false;
-    status.textContent = "Camera Started. Loading Model...";
+        webcam_stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: "user", height: 480, width: 640}});
+        video.srcObject = webcam_stream;
+        stopBtn.disabled = false;
+        status.textContent = "Camera Started. Loading Model...";
 
-    handLandmarker = await initDetector();
-    if(!webcam_stream) return;
+        handLandmarker = await initDetector();
+        if(!webcam_stream) return;
 
-    status.textContent = "Camera and Hand detector ready";
+        status.textContent = "Camera and Hand detector ready";
 
-    function loop()
-    {   
-        if(!webcam_stream)
+        if(!document.hidden)
         {
-            return;
+            animationId = requestAnimationFrame(loop);
         }
-
-        if(video.readyState >= 2)
-        {
-            const result = detect(video);
-            console.log(result);
-
-            drawHand(canvas, result);
-
-            const sign = classify(result);
-            console.log(sign);
-
-            const stableSign = smoother.update(sign);
-            label.textContent = stableSign ?? "Show your hand";
-
-            if(!stableSign)
-            {
-                lastSpoken = null;
-            }
-
-            if(soundToggle.checked && stableSign != lastSpoken)
-            {
-                speak(stableSign);
-                lastSpoken = stableSign;
-            } 
-        }
-        animationId = requestAnimationFrame(loop);
-    }
-
-    animationId = requestAnimationFrame(loop);
     }
     catch(error)
     {
@@ -125,3 +128,22 @@ function stopCamera()
 
 startBtn.addEventListener("click",startCamera);
 stopBtn.addEventListener("click",stopCamera);
+document.addEventListener("visibilitychange", ()=> 
+{
+    if(document.hidden)
+    {   
+        if(animationId !== null)
+        {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        }    
+    }
+    else
+    {
+        if(webcam_stream && animationId === null)
+        {
+            animationId = requestAnimationFrame(loop);
+        }
+    }
+
+});
