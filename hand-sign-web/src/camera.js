@@ -80,7 +80,8 @@ async function startCamera()
         }
     }
     catch(error)
-    {
+    {   
+        stopCamera();
         if(error.name === "NotAllowedError")
         {
             status.textContent = "User Denied Premission";
@@ -94,7 +95,6 @@ async function startCamera()
             status.textContent = "Error Occured " + error.message;
         }
 
-        stopCamera();
     }
 }
 
