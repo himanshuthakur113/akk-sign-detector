@@ -11,12 +11,14 @@ const status = document.getElementById("status");
 const canvas = document.querySelector("canvas");
 const label = document.getElementById("label");
 const soundToggle = document.getElementById("soundToggle");
+const flipBtn = document.getElementById("flipBtn");
 
 let webcam_stream;
 let handLandmarker = null;
 let animationId = null;
 let smoother = createSmoother(30);
 let lastSpoken = null;
+let facingMode = "user";
 
 function loop()
 {   
@@ -61,8 +63,9 @@ async function startCamera()
 
     try
     {
-        webcam_stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: "user", height: 480, width: 640}});
+        webcam_stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: facingMode, height: 480, width: 640}});
         video.srcObject = webcam_stream;
+        flipBtn.disabled = false;
         stopBtn.disabled = false;
         status.textContent = "Camera Started. Loading Model...";
 
@@ -124,10 +127,27 @@ function stopCamera()
 
     startBtn.disabled = false;
     stopBtn.disabled = true;
+    flipBtn.disabled = true;
+}
+
+async function flipCamera()
+{
+    if(!webcam_stream) return;
+    for(const track of webcam_stream.getTracks)
+    {
+        track.stop();
+    }
+
+    video.srcObject = null;
+    webcam_stream = null;
+
+    facingMode = facingMode === "user"? "environment" : "user";
+    await startCamera();
 }
 
 startBtn.addEventListener("click",startCamera);
 stopBtn.addEventListener("click",stopCamera);
+flipBtn.addEventListener("click", flipCamera);
 document.addEventListener("visibilitychange", ()=> 
 {
     if(document.hidden)
