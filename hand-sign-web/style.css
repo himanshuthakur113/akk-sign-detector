@@ -50,13 +50,13 @@ button
     border-radius: 8px;
 }
 
-border:disabled
+button:disabled
 {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-@media (max-widht: 600px)
+@media (max-width: 600px)
 {
     body
     {
