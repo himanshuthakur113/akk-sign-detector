@@ -22,3 +22,16 @@ export function drawHand(canvas, landmarks)
     utils.drawLandmarks(landmarks,{color: "#ff0000",lineWidth: 2}); 
 
 }
+
+export function speak(text)
+{   
+    if(!("speechSynthesis" in window))
+    {
+        console.log("Speech Synthesis is not supported");
+        return;
+    }
+    
+    const say = new SpeechSynthesisUtterance(text);
+    speechSynthesis.cancel();
+    speechSynthesis.speak(say);
+}
