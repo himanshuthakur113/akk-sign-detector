@@ -22,13 +22,19 @@ async function startCamera()
 {
     if(webcam_stream) return;
 
+    startBtn.disabled = true;
+    stopBtn.disabled = true;
+
     try
     {
     webcam_stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: "user", height: 480, width: 640}});
     video.srcObject = webcam_stream;
+    stopBtn.disabled = false;
     status.textContent = "Camera Started. Loading Model...";
 
     handLandmarker = await initDetector();
+    if(!webcam_stream) return;
+
     status.textContent = "Camera and Hand detector ready";
 
     function loop()
@@ -112,6 +118,9 @@ function stopCamera()
 
     lastSpoken = null;
     speechSynthesis.cancel();
+
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
 }
 
 startBtn.addEventListener("click",startCamera);
