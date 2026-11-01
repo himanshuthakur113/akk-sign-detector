@@ -80,6 +80,7 @@ function stopCamera()
     }
     video.srcObject = null;
     webcam_stream = null;
+    drawHand(canvas, null);
     status.textContent = "Camera Stopped";
 }
 
