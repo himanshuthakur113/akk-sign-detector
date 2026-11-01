@@ -13,10 +13,12 @@ const label = document.getElementById("label");
 let webcam_stream;
 let handLandmarker = null;
 let animationId = null;
-let smoother = createSmoother(100);
+let smoother = createSmoother(30);
 
 async function startCamera()
 {
+    if(webcam_stream) return;
+    
     try
     {
     webcam_stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: "user", height: 480, width: 640}});
@@ -74,18 +76,24 @@ async function startCamera()
 
 function stopCamera()
 {   
-    if(!webcam_stream)
+    if(animationId !== null)
     {
-        status.textContent = "No Video Found";
-        return;
+        cancelAnimationFrame(animationId);
+        animationId = null;
     }
 
-    for(const track of webcam_stream.getTracks())
+    if(webcam_stream)
     {
+        for(const track of webcam_stream.getTracks())
+        {
         track.stop();
+        }
+        video.srcObject = null;
+        webcam_stream = null;
     }
-    video.srcObject = null;
-    webcam_stream = null;
+
+    smoother = createSmoother(30);
+
     drawHand(canvas, null);
     label.textContent = "";
     status.textContent = "Camera Stopped";
