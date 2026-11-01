@@ -1,6 +1,7 @@
 import { initDetector, detect } from "./detector.js";
 import { drawHand } from "./ui.js";
 import { classify } from "./classifier.js";
+import { createSmoother } from "./smoother.js";
 
 const video = document.getElementById("kvid");
 const startBtn = document.getElementById("startBtn");
@@ -12,6 +13,7 @@ const label = document.getElementById("label");
 let webcam_stream;
 let handLandmarker = null;
 let animationId = null;
+let smoother = createSmoother(100);
 
 async function startCamera()
 {
@@ -37,9 +39,13 @@ async function startCamera()
         console.log(result);
 
         drawHand(canvas, result);
+
         const sign = classify(result);
-        label.textContent = sign ?? "Show your hand";
         console.log(sign);
+
+        const stableSign = smoother.update(sign);
+        label.textContent = stableSign ?? "Show your hand";
+        
         }
 
         animationId = requestAnimationFrame(loop);
@@ -81,6 +87,7 @@ function stopCamera()
     video.srcObject = null;
     webcam_stream = null;
     drawHand(canvas, null);
+    label.textContent = "";
     status.textContent = "Camera Stopped";
 }
 
