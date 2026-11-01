@@ -16,7 +16,7 @@ const flipBtn = document.getElementById("flipBtn");
 let webcam_stream;
 let handLandmarker = null;
 let animationId = null;
-let smoother = createSmoother(30);
+let smoother = createSmoother(15);
 let lastSpoken = null;
 let facingMode = "user";
 
@@ -30,12 +30,12 @@ function loop()
     if(video.readyState >= 2)
     {
         const result = detect(video);
-        console.log(result);
+        //console.log(result);
 
         drawHand(canvas, result);
 
         const sign = classify(result);
-        console.log(sign);
+        //console.log(sign);
 
         const stableSign = smoother.update(sign);
         label.textContent = stableSign ?? "Show your hand";
@@ -116,7 +116,7 @@ function stopCamera()
         webcam_stream = null;
     }
 
-    smoother = createSmoother(30);
+    smoother = createSmoother(15);
 
     drawHand(canvas, null);
     label.textContent = "";
