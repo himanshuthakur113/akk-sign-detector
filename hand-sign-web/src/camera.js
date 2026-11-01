@@ -2,6 +2,7 @@ import { initDetector, detect } from "./detector.js";
 import { drawHand } from "./ui.js";
 import { classify } from "./classifier.js";
 import { createSmoother } from "./smoother.js";
+import { speak } from "./ui.js";
 
 const video = document.getElementById("kvid");
 const startBtn = document.getElementById("startBtn");
@@ -9,16 +10,18 @@ const stopBtn = document.getElementById("stopBtn");
 const status = document.getElementById("status");
 const canvas = document.querySelector("canvas");
 const label = document.getElementById("label");
+const soundToggle = document.getElementById("soundToggle");
 
 let webcam_stream;
 let handLandmarker = null;
 let animationId = null;
 let smoother = createSmoother(30);
+let lastSpoken = null;
 
 async function startCamera()
 {
     if(webcam_stream) return;
-    
+
     try
     {
     webcam_stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: "user", height: 480, width: 640}});
@@ -37,19 +40,28 @@ async function startCamera()
 
         if(video.readyState >= 2)
         {
-        const result = detect(video);
-        console.log(result);
+            const result = detect(video);
+            console.log(result);
 
-        drawHand(canvas, result);
+            drawHand(canvas, result);
 
-        const sign = classify(result);
-        console.log(sign);
+            const sign = classify(result);
+            console.log(sign);
 
-        const stableSign = smoother.update(sign);
-        label.textContent = stableSign ?? "Show your hand";
-        
+            const stableSign = smoother.update(sign);
+            label.textContent = stableSign ?? "Show your hand";
+
+            if(!stableSign)
+            {
+                lastSpoken = null;
+            }
+
+            if(soundToggle.checked && stableSign != lastSpoken)
+            {
+                speak(stableSign);
+                lastSpoken = stableSign;
+            } 
         }
-
         animationId = requestAnimationFrame(loop);
     }
 
@@ -97,6 +109,9 @@ function stopCamera()
     drawHand(canvas, null);
     label.textContent = "";
     status.textContent = "Camera Stopped";
+
+    lastSpoken = null;
+    speechSynthesis.cancel();
 }
 
 startBtn.addEventListener("click",startCamera);
