@@ -9,7 +9,7 @@ export function fingersUp(lm)
     {
         return null;
     }
-    
+
     const wrist = lm[0];
     const pinkyKnucle = lm[17];
 
@@ -31,4 +31,38 @@ export function classify(landmarks)
     {
         return null;
     }
+    const fingers = fingersUp(landmarks);
+
+    const [thumb, index, middle, ring, pinky] = fingers;
+
+    const count = fingers.filter(Boolean).length;
+
+    if (count === 0) {
+        return "Fist";
+    }
+
+    if (count === 5) {
+        return "Open Palm";
+    }
+
+    if (index && !thumb && !middle && !ring && !pinky) {
+        return "Pointing";
+    }
+
+    if (index && middle && !thumb && !ring && !pinky) {
+        return "Peace";
+    }
+
+    if (
+        thumb &&
+        !index &&
+        !middle &&
+        !ring &&
+        !pinky &&
+        landmarks[4].y < landmarks[0].y
+    ) {
+        return "Thumbs Up";
+    }
+
+    return `${count} fingers`;
 }

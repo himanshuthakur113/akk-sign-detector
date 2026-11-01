@@ -1,6 +1,6 @@
 import { initDetector, detect } from "./detector.js";
 import { drawHand } from "./ui.js";
-import { fingersUp } from "./classifier.js";
+import { classify } from "./classifier.js";
 
 const video = document.getElementById("kvid");
 const startBtn = document.getElementById("startBtn");
@@ -35,9 +35,9 @@ async function startCamera()
         const result = detect(video);
         console.log(result);
 
-         drawHand(canvas, result);
-         const fingers = fingersUp(result);
-         console.log(fingers);
+        drawHand(canvas, result);
+        const sign = classify(result);
+        console.log(sign);
         }
 
         animationId = requestAnimationFrame(loop);
