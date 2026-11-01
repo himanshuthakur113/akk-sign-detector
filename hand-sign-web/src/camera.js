@@ -1,9 +1,11 @@
 import { initDetector, detect } from "./detector.js";
+import { drawHand } from "./ui.js";
 
 const video = document.getElementById("kvid");
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
 const status = document.getElementById("status");
+const canvas = document.querySelector("canvas");
 
 let webcam_stream;
 let handLandmarker = null;
@@ -31,6 +33,8 @@ async function startCamera()
         {
         const result = detect(video);
         console.log(result);
+
+         drawHand(canvas, result);
         }
 
         animationId = requestAnimationFrame(loop);

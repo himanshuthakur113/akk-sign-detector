@@ -1,4 +1,5 @@
-const canvas = document.querySelector("canvas");
+import { DrawingUtils, HandLandmarker } from "../assets/mediapipe/vision_bundle.mjs";
+
 export function drawHand(canvas, landmarks)
 {
     const ctx = canvas.getContext("2d");
@@ -8,4 +9,16 @@ export function drawHand(canvas, landmarks)
     {
         return;
     }
+
+    const utils = new DrawingUtils(ctx);
+
+    utils.drawConnectors(landmarks, HandLandmarker.HAND_CONNECTIONS,
+    {
+        color: "#00ff00",
+        lineWidth: 3
+    }
+    );
+
+    utils.drawLandmarks(landmarks,{color: "#ff0000",lineWidth: 2}); 
+
 }
