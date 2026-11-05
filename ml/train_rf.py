@@ -1,6 +1,7 @@
 import pandas as pd 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report
 
 df = pd.read_csv("dataset.csv", header = None, on_bad_lines = "skip")
 
@@ -44,3 +45,11 @@ model = RandomForestClassifier(
 
 model.fit(X_train, y_train)
 print("\nRandom Forest training completed!")
+
+accuracy = model.score(X_test, y_test)
+print("\nModel accuracy:" , accuracy)
+
+y_pred = model.predict(X_test)
+
+print("\n Classification Report: ")
+print(classification_report(y_test, y_pred))
