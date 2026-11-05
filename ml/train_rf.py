@@ -2,6 +2,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report
+import joblib
+import json
 
 df = pd.read_csv("dataset.csv", header = None, on_bad_lines = "skip")
 
@@ -53,3 +55,19 @@ y_pred = model.predict(X_test)
 
 print("\n Classification Report: ")
 print(classification_report(y_test, y_pred))
+
+total_nodes = sum(
+        tree.tree_.node_count
+        for tree in model.estimators_
+        )
+
+print("\nTotal trees:", len(model.estimators_))
+print("total nodes:", total_nodes)
+print("estimated json size", total_nodes * 100/(1024* 1024), "MB")
+
+joblib.dump(model, "rf_model.joblib")
+
+with open("classes.json", "w") as f:
+    json.dump(list(model.classes_), f)
+
+print("\n model and classes saved successfully")
