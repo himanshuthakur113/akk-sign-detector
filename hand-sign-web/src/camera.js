@@ -3,7 +3,7 @@ import { drawHand } from "./ui.js";
 import { classify } from "./classifier.js";
 import { createSmoother } from "./smoother.js";
 import { speak } from "./ui.js";
-import { loadModel, predictSign } from "./mlPredictor.js";
+import { loadModel, predictSign, extractFeatures } from "./mlPredictor.js";
 
 const video = document.getElementById("kvid");
 const startBtn = document.getElementById("startBtn");
@@ -21,6 +21,14 @@ let smoother = createSmoother(15);
 let lastSpoken = null;
 let facingMode = "user";
 
+const testLandmarks = Array.from(
+    {length: 21},
+    () => ({x:0.5, y:0.6, z:0})
+);
+
+const features = extractFeatures(testLandmarks);
+console.log("features:", features);
+console.log(features.length);
 function loop()
 {   
     if(!webcam_stream || document.hidden)
@@ -174,8 +182,3 @@ video.addEventListener("loadedmetadata", ()=>
     canvas.width= video.videoWidth;
     canvas.height = video.videoHeight;
 });
-
-await loadModel();
-const testfeatures = new Array(42).fill(0.5);
-const result = predictSign(testfeatures);
-console.log(result);

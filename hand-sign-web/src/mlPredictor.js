@@ -74,3 +74,14 @@ export function predictSign(features)
         probabilities: average
     };
 }
+
+export function extractFeatures(landmarks)
+{
+    const features = []
+    for(const point of landmarks)
+    {
+        features.push(point.x);
+        features.push(point.y);
+    }
+    return features;
+}
