@@ -2,6 +2,22 @@ import joblib
 import numpy as np
 import json
 import os
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+df = pd.read_csv("dataset.csv", header = None, on_bad_lines = "skip")
+
+x = df.iloc[:, :42]
+y = df.iloc[:, -1].astype(str)
+
+y = y.str.strip()
+
+mask = y.str.lower() != "fuck you"
+
+X = x[mask]
+y = y[mask]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, stratify = y, random_state = 42)
 
 model = joblib.load("rf_model.joblib")
 
@@ -44,6 +60,32 @@ for est in model.estimators_:
     tree_data["value"] = leaf_values
     data["trees"].append(tree_data)
 
-    
 
-print(data)
+def predict_json(data, x):
+    total = np.zeros(len(data["classes"]))
+    for tree in data["trees"]:
+        node = 0
+        while tree["left"][node] != -1:
+            feature = tree["feature"][node]
+            threshold = tree["threshold"][node]
+
+            if x[feature] <= threshold:
+                node = tree["left"][node]
+            else:
+                node = tree["right"][node]
+
+        total += np.array(tree["value"][node])
+    return total/len(data["trees"])
+
+for i in range(300):
+    x = X_test.iloc[i].to_numpy()
+    json_prediction = predict_json(data, x)
+    predicted_class =  data["classes"][np.argmax(json_prediction)]
+    actual_prediction = model.predict([x])[0]
+
+    if predicted_class != actual_prediction:
+        print("mistmatch at sample:", i)
+        print("json prdiction:", predict_class)
+        print("model prediction:", actual_prediction)
+
+print("\nPrediction comparison completed")
