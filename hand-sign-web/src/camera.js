@@ -20,15 +20,8 @@ let animationId = null;
 let smoother = createSmoother(15);
 let lastSpoken = null;
 let facingMode = "user";
+let modelLoaded = false;
 
-const testLandmarks = Array.from(
-    {length: 21},
-    () => ({x:0.5, y:0.6, z:0})
-);
-
-const features = extractFeatures(testLandmarks);
-console.log("features:", features);
-console.log(features.length);
 function loop()
 {   
     if(!webcam_stream || document.hidden)
@@ -43,7 +36,18 @@ function loop()
 
         drawHand(canvas, result);
 
-        const sign = classify(result);
+        let sign = null;
+
+        if(result && result.length === 21)
+        {
+            const features = extractFeatures(result);
+            const prediction = predictSign(features);
+            sign = prediction.label;
+            console.log("Predicted sign: ", prediction.label);
+            console.log("confidence: ",prediction.confidence);
+
+        }
+        //const sign = classify(result);
         //console.log(sign);
 
         const stableSign = smoother.update(sign);
@@ -81,6 +85,14 @@ async function startCamera()
         handLandmarker = await initDetector();
         if(!webcam_stream) return;
 
+        if(!modelLoaded)
+        {
+            await loadModel();
+            modelLoaded = true;
+        }
+        
+        if(!webcam_stream) return;
+        
         status.textContent = "Camera and Hand detector ready";
 
         if(!document.hidden)
