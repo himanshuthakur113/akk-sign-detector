@@ -3,6 +3,7 @@ import { drawHand } from "./ui.js";
 import { classify } from "./classifier.js";
 import { createSmoother } from "./smoother.js";
 import { speak } from "./ui.js";
+import { loadModel, predictSign } from "./mlPredictor.js";
 
 const video = document.getElementById("kvid");
 const startBtn = document.getElementById("startBtn");
@@ -173,3 +174,8 @@ video.addEventListener("loadedmetadata", ()=>
     canvas.width= video.videoWidth;
     canvas.height = video.videoHeight;
 });
+
+await loadModel();
+const testfeatures = new Array(42).fill(0.5);
+const result = predictSign(testfeatures);
+console.log(result);
