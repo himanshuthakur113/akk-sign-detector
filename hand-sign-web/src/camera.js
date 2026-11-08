@@ -42,9 +42,9 @@ function loop()
         {
             const features = extractFeatures(result);
             const prediction = predictSign(features);
-            sign = prediction.label;
-            console.log("Predicted sign: ", prediction.label);
-            console.log("confidence: ",prediction.confidence);
+            sign = prediction.confidence >= 0.5 ? prediction.label : "?";
+            //console.log("Predicted sign: ", prediction.label);
+            //console.log("confidence: ",prediction.confidence);
 
         }
         //const sign = classify(result);
@@ -92,7 +92,7 @@ async function startCamera()
         }
         
         if(!webcam_stream) return;
-        
+
         status.textContent = "Camera and Hand detector ready";
 
         if(!document.hidden)

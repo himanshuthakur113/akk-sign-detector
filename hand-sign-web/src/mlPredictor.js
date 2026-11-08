@@ -76,12 +76,14 @@ export function predictSign(features)
 }
 
 export function extractFeatures(landmarks)
-{
+{   
+    const wrist = landmarks[0]
     const features = []
+
     for(const point of landmarks)
     {
-        features.push(point.x);
-        features.push(point.y);
+        features.push(point.x - wrist.x);
+        features.push(point.y - wrist.y);
     }
     return features;
 }
