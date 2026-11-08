@@ -89,3 +89,23 @@ for i in range(300):
         print("model prediction:", actual_prediction)
 
 print("\nPrediction comparison completed")
+
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+output_path = os.path.join(
+    project_root,
+    "hand-sign-web",
+    "assets",
+    "models",
+    "rf_v1.json",
+)
+
+os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+with open(output_path, "w") as f:
+    json.dump(data, f, separators=(",", ":"))
+
+size_bytes = os.path.getsize(output_path)
+size_mb = size_bytes/(1024 * 1024)
+
+print(output_path)
+print("size: ", round(size_mb,2), "mb")
